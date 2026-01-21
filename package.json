@@ -1,0 +1,19 @@
+{
+  "name": "port-russell-api",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "ejs": "~2.6.1",
+    "express": "~4.16.1",
+    "http-errors": "~1.6.3",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.0.0",
+    "morgan": "~1.9.1"
+  }
+}
