@@ -8,11 +8,11 @@ const CatwaySchema = new Schema({
     catwayNumber: {
         type: Number,
         required: true,
-        unique: true // Chaque emplacement a un numéro unique
+        unique: true //  emplacement a un numéro unique
     },
     type: {
         type: String,
-        enum: ['long', 'short'], // On accepte seulement ces deux valeurs
+        enum: ['long', 'short'], //  seulement ces deux valeurs
         required: true
     },
     catwayState: {
