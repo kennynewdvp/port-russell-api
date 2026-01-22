@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+    <header>
+        <h1>Système de Gestion Portuaire</h1>
+        <p>Session active : Capitaine <%= user %></p>
+    </header>
+
+    <main>
+        <section class="ship-list">
+            <h2>Liste des Navires en Zone d'Amarrage</h2>
+            
+            <div id="boats-container">
+                <% if (boats && boats.length > 0) { %>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nom du Navire</th>
+                                <th>Catégorie</th>
+                                <th>État / Disponibilité</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% boats.forEach(boat => { %>
+                                <tr>
+                                    <td><strong><%= boat.name %></strong></td>
+                                    <td><%= boat.category || boat.type || 'Non spécifié' %></td>
+                                    <td><%= boat.status || (boat.isAvailable ? 'Disponible' : 'Occupé') %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                <% } else { %>
+                    <p style="text-align: center; padding: 20px;">Aucun navire n'est actuellement enregistré dans la base de données.</p>
+                <% } %>
+            </div>
+        </section>
+        
+        <div style="text-align: right;">
+            <a href="/auth/logout">Se déconnecter du système</a>
+        </div>
+    </main>
+</body>
+</html>

@@ -12,5 +12,6 @@ router.get('/', auth, boatController.getAllBoats);
 
 // Route pour ajouter un bateau (Besoin d'être connecté)
 router.post('/add', auth, boatController.createBoat);
-
+router.patch('/:id', auth, boatController.updateBoat);
+router.put('/:id', auth, boatController.updateBoat);
 module.exports = router;
