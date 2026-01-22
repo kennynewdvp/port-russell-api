@@ -32,3 +32,24 @@ exports.createBoat = async (req, res) => {
         res.status(400).json({ message: "Erreur lors de l'ajout", error });
     }
 };
+
+/**
+ * Modifie un bateau existant (pour remplir catégorie et statut)
+ * @param {Object} req - Requête Express (contenant l'ID dans les params)
+ * @param {Object} res - Réponse Express
+ */
+exports.updateBoat = async (req, res) => {
+    try {
+        const { id } = req.params;
+        // On met à jour le bateau avec les données envoyées dans le body (Postman)
+        const updatedBoat = await Boat.findByIdAndUpdate(id, req.body, { new: true });
+
+        if (!updatedBoat) {
+            return res.status(404).json({ message: "Bateau non trouvé" });
+        }
+
+        res.status(200).json({ message: "Bateau mis à jour !", boat: updatedBoat });
+    } catch (error) {
+        res.status(400).json({ message: "Erreur lors de la mise à jour", error });
+    }
+};
