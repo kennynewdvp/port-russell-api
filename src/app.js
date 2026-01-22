@@ -4,6 +4,7 @@ const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
 const authRoutes = require('./routes/authRoutes');
+const boatRoutes = require('./routes/boatRoutes');
 const auth = require('./middlewares/auth'); // Import du gardien
 
 // --- CONNEXION BASE DE DONNÉES ---
@@ -36,6 +37,11 @@ app.use(cookieParser());
 
 // 1. Routes publiques (Login)
 app.use('/auth', authRoutes); 
+app.use('/boats', boatRoutes);
+
+// Configuration du moteur de rendu EJS
+app.set('view engine', 'ejs');
+app.set('views', './src/views');
 
 // 2. Route protégée (Dashboard) 
 // Le middleware 'auth' vérifie ton Token et ta SECRET_KEY avant de laisser passer
