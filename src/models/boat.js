@@ -17,6 +17,12 @@ const boatSchema = new mongoose.Schema({
         type: Number, 
         required: [true, "La longueur est obligatoire"] 
     },
+    // ON RAJOUTE LA CATÉGORIE ICI :
+    category: { 
+        type: String, 
+        required: [true, "La catégorie est obligatoire"],
+        default: "Classe A"
+    },
     description: { 
         type: String,
         default: "Aucune description" 
