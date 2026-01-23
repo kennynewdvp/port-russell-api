@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Utilisateurs</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+    <header>
+        <h1>Utilisateurs du Système</h1>
+        <nav><a href="/dashboard">Retour au Dashboard</a></nav>
+    </header>
+
+    <main>
+        <ul>
+            <% users.forEach(user => { %>
+                <li>
+                    <strong><%= user.username %></strong> (<%= user.email %>)
+                    </li>
+            <% }); %>
+        </ul>
+    </main>
+</body>
+</html>

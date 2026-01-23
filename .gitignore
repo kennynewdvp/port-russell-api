@@ -1,5 +1,9 @@
 node_modules/
+# Ignore tout le dossier contenant tes variables d'environnement
 env/
+# Ignore aussi les fichiers .env qui pourraient traîner à la racine
 .env*
-uploads/*
-!.gitkeep
+# Ignore les dossiers inutiles qu'on a supprimés
+uploads/
+# Ignore les fichiers système
+.DS_Store

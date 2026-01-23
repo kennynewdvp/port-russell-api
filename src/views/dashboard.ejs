@@ -2,8 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Port Russell - Gestion de la Flotte</title>
+    <title>Système de Gestion Portuaire</title>
     <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
 <body>
@@ -13,120 +12,37 @@
     </header>
 
     <main>
-        <section class="ship-list">
-            <h2>Liste des Navires en Zone d'Amarrage</h2>
-            
-            <section id="add-boat-section" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background-color: #f9f9f9;">
-    <h3>Ajouter un nouveau navire</h3>
-    <form id="addBoatForm">
-        <input type="text" id="boatName" placeholder="Nom du navire" required>
-        <input type="text" id="boatOwner" placeholder="Propriétaire" required>
-        <input type="number" id="boatLength" placeholder="Longueur (m)" required>
-        
-        <select id="boatCategory">
-            <option value="Classe A">Classe A</option>
-            <option value="Classe B">Classe B</option>
-        </select>
-
-        <input type="text" id="boatDescription" placeholder="Description (facultatif)">
-        
-        <button type="submit" style="background-color: #2ecc71; color: white; border: none; padding: 5px 15px; cursor: pointer; border-radius: 4px;">Ajouter</button>
-    </form>
-</section>
-
-            <div id="boats-container">
-                <% if (boats && boats.length > 0) { %>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nom du Navire</th>
-                                <th>Catégorie</th>
-                                <th>État / Disponibilité</th>
-                                <th>Actions</th> </tr>
-                        </thead>
-                        <tbody>
-                            <% boats.forEach(boat => { %>
-                                <tr>
-                                    <td><strong><%= boat.name %></strong></td>
-                                    <td><%= boat.category || boat.type || 'Non spécifié' %></td>
-                                    <td><%= boat.status || (boat.isAvailable ? 'Disponible' : 'Occupé') %></td>
-                                    <td>
-                                        <button onclick="deleteBoat('<%= boat._id %>')" style="background-color: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;">
-                                            Supprimer
-                                        </button>
-                                    </td>
-                                </tr>
-                            <% }) %>
-                        </tbody>
-                    </table>
+        <h2>Liste des Navires Amarrés (Vue Globale)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Navire</th>
+                    <th>Client</th>
+                    <th>Arrivée</th>
+                    <th>Départ</th>
+                    <th>Catway</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (boats.length > 0) { %>
+                    <% boats.forEach(resa => { %>
+                    <tr>
+                        <td><strong><%= resa.boatName %></strong></td>
+                        <td><%= resa.clientName %></td>
+                        <td><%= new Date(resa.checkIn).toLocaleDateString() %></td>
+                        <td><%= new Date(resa.checkOut).toLocaleDateString() %></td>
+                        <td><%= resa.catwayNumber %></td>
+                    </tr>
+                    <% }) %>
                 <% } else { %>
-                    <p style="text-align: center; padding: 20px;">Aucun navire n'est actuellement enregistré.</p>
+                    <tr><td colspan="5">Aucune réservation en cours.</td></tr>
                 <% } %>
-            </div>
-        </section>
-        
-        <div style="text-align: right; margin-top: 20px;">
-            <a href="/auth/logout" style="color: #e74c3c;">Se déconnecter du système</a>
-        </div>
+            </tbody>
+        </table>
+        <br>
+        <a href="/catways" style="padding: 10px; background: #2c3e50; color: white; text-decoration: none;">Gérer les Catways</a>
+        <br><br>
+        <a href="/logout" style="color: red;">Se déconnecter</a>
     </main>
-
-    <script>
-        // 1. Gérer l'Ajout d'un bateau
-       document.getElementById('addBoatForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    // On récupère toutes les valeurs du formulaire
-    const name = document.getElementById('boatName').value;
-    const owner = document.getElementById('boatOwner').value;
-    const length = document.getElementById('boatLength').value;
-    const category = document.getElementById('boatCategory').value;
-    const description = document.getElementById('boatDescription').value;
-
-    try {
-        const response = await fetch('/boats', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            // On envoie un objet qui correspond EXACTEMENT au modèle Mongoose
-            body: JSON.stringify({ 
-                name, 
-                owner, 
-                length, 
-                category, 
-                description 
-            })
-        });
-
-        if (response.ok) {
-            window.location.reload(); 
-        } else {
-            const errorData = await response.json();
-            alert("Erreur lors de l'ajout : " + (errorData.message || "Vérifiez les données"));
-        }
-    } catch (err) {
-        console.error("Erreur réseau:", err);
-    }
-});
-
-        // 2. Gérer la Suppression
-        async function deleteBoat(id) {
-            if (confirm("Voulez-vous vraiment retirer ce navire de la flotte ?")) {
-                try {
-                    const response = await fetch(`/boats/${id}`, {
-                        method: 'DELETE'
-                    });
-
-                    if (response.ok) {
-                        window.location.reload();
-                    } else {
-                        // On affiche le code d'erreur pour comprendre (404, 401, 500...)
-                console.error("Réponse du serveur :", response.status);
-                alert("Erreur " + response.status + " lors de la suppression.");
-                    }
-                } catch (err) {
-                    console.error(err);
-                }
-            }
-        }
-    </script>
 </body>
 </html>

@@ -1,78 +1,48 @@
 const express = require('express');
 const path = require('path');
-const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const dotenv = require('dotenv');
 
-// 1. CONFIGURATION DES VARIABLES D'ENVIRONNEMENT [cite: 2026-01-14]
-dotenv.config({ path: path.join(__dirname, '../env/.env.dev') });
+// --- CHARGEMENT DES VARIABLES D'ENVIRONNEMENT ---
+// On pointe vers le fichier .env.dev situé dans ton dossier /env
+dotenv.config({ path: path.join(__dirname, 'env', '.env.dev') });
 
 const app = express();
 
-// 2. IMPORTS DES ROUTES ET MODÈLES
-const User = require('./models/user'); 
-const authRoutes = require('./routes/authRoutes');
-const boatRoutes = require('./routes/boatRoutes');
-const auth = require('./middlewares/auth');
-const Boat = require('./models/boat');
-
-// 3. MIDDLEWARES (Configuration du serveur)
-app.use(express.json()); 
-app.use(express.urlencoded({ extended: true })); 
-app.use(cookieParser()); 
-app.use(express.static('public')); 
-
-// Configuration EJS
+// --- CONFIGURATION DU MOTEUR DE VUE ---
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// 4. CONNEXION MONGODB
-const dbURI = process.env.MONGODB_URI || 'mongodb+srv://kennycombegaming_db_user:fpHzE3V9L33ZZQf0@cluster0.ra3imqg.mongodb.net/port-russell?retryWrites=true&w=majority'; 
+// --- MIDDLEWARES ---
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser()); 
 
-mongoose.connect(dbURI)
-  .then(async () => {
-    console.log('Connecté avec succès à MongoDB Atlas !');
-    const users = await User.find();
-    if (users.length === 0) {
-        await User.create({
-            name: "Russell",
-            firstname: "Admin",
-            email: "admin@russell.com",
-            password: "password123" 
-        });
-        console.log('Utilisateur de test créé !');
-    }
-  })
-  .catch((err) => console.log('Erreur de connexion MongoDB :', err));
+// Gestion des fichiers statiques (CSS, images)
+// Vérifie si ton dossier public est à la racine ou dans src
+app.use(express.static(path.join(__dirname, 'public')));
 
-// 5. ROUTES
+// --- CONNEXION MONGODB ---
+// On utilise la variable d'environnement pour plus de sécurité 
+const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://kennycombegaming_db_user:Russell2026@cluster0.ra3imqg.mongodb.net/port-russell';
 
-// Route racine
-app.get('/', (req, res) => res.redirect('/login'));
+mongoose.connect(mongoURI)
+    .then(() => console.log('✅ Connexion à MongoDB réussie (Port-Russell) !'))
+    .catch((err) => console.error('❌ Erreur de connexion MongoDB :', err));
 
-// Login
-app.get('/login', (req, res) => res.render('login'));
-app.use('/auth', authRoutes); 
+// --- ROUTES ---
+// Ton fichier index.js centralise tout (Login, Catways, Réservations, Users)
+const indexRoute = require('./routes/index');
+app.use('/', indexRoute);
 
-// Dashboard (CETTE VERSION EST LA BONNE - Elle récupère les bateaux) [cite: 2026-01-20]
-app.get('/dashboard', auth, async (req, res) => {
-    try {
-        const boats = await Boat.find(); 
-        res.render('dashboard', { 
-            user: "Russell",
-            title: "Gestion des Spectres",
-            boats: boats 
-        });
-    } catch (error) {
-        res.status(500).send("Erreur lors de la récupération des navires.");
-    }
+// --- GESTION DES ERREURS 404 ---
+app.use((req, res) => {
+    res.status(404).send("Page non trouvée ! Vérifiez votre URL.");
 });
 
-// API Bateaux (Issue #4)
-app.use('/boats', boatRoutes);
-
-// 6. LANCEMENT
+// --- LANCEMENT DU SERVEUR ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Serveur lancé sur http://localhost:${PORT}`);
+    console.log(`🚀 Serveur Russell lancé sur http://localhost:${PORT}`);
 });

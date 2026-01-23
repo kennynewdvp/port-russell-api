@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Réservations - Catway n°<%= catwayNumber %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+    <header>
+        <h1>Réservations pour le Catway n°<%= catwayNumber %></h1>
+        <nav>
+            <a href="/catways">⚓ Retour aux Catways</a> | 
+            <a href="/dashboard">🏠 Retour au Dashboard</a>
+        </nav>
+    </header>
+
+    <main>
+        <table>
+            <thead>
+                <tr>
+                    <th>Bateau</th>
+                    <th>Client</th>
+                    <th>Début</th>
+                    <th>Fin</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (reservations && reservations.length > 0) { %>
+                    <% reservations.forEach(res => { %>
+                    <tr>
+                        <td><%= res.boatName %></td>
+                        <td><%= res.clientName %></td>
+                        <td><%= new Date(res.checkIn).toLocaleDateString() %></td>
+                        <td><%= new Date(res.checkOut).toLocaleDateString() %></td>
+                        <td>
+                            <form action="/catways/<%= catwayNumber %>/reservations/<%= res._id %>/delete" method="POST">
+                                <button type="submit" style="color: red;">Supprimer</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="5" style="text-align: center;">Aucune réservation pour ce catway.</td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+
+        <hr>
+
+        <section style="margin-top: 30px; padding: 20px; border: 1px solid #ddd; background: #f9f9f9;">
+            <h3>Enregistrer une nouvelle réservation</h3>
+            <form action="/catways/<%= catwayNumber %>/reservations" method="POST">
+                <div style="margin-bottom: 10px;">
+                    <label>Nom du bateau :</label><br>
+                    <input type="text" name="boatName" required placeholder="Ex: Titanic">
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label>Nom du client :</label><br>
+                    <input type="text" name="clientName" required placeholder="Ex: Jack Dawson">
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label>Date de début :</label><br>
+                    <input type="date" name="checkIn" required>
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label>Date de fin :</label><br>
+                    <input type="date" name="checkOut" required>
+                </div>
+                <button type="submit" style="background-color: #27ae60; color: white; padding: 10px; border: none; cursor: pointer;">
+                    Valider la réservation
+                </button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>
