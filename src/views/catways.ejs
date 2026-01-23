@@ -25,7 +25,7 @@
                 <% catways.forEach(catway => { %>
                 <tr>
                     <td><%= catway.catwayNumber %></td>
-                    <td><%= catway.catwayType %></td>
+                    <td><strong><%= catway.type %></strong></td> 
                     <td><%= catway.catwayState %></td>
                     <td>
                         <a href="/catways/<%= catway.catwayNumber %>">Détails</a> |
@@ -50,16 +50,18 @@
                 </div>
                 <div>
                     <label>Type :</label>
-                    <select name="catwayType">
-                        <option value="long">Long</option>
-                        <option value="short">Short</option>
+                    <select name="type" required>
+                        <option value="Long">Long</option>
+                        <option value="Short">Short</option>
                     </select>
                 </div>
                 <div>
                     <label>État :</label>
                     <input type="text" name="catwayState" placeholder="ex: Bon état" required>
                 </div>
-                <button type="submit">Enregistrer le catway</button>
+                <button type="submit" style="background-color: #3498db; color: white; padding: 10px; border: none; cursor: pointer; margin-top: 10px;">
+                    Enregistrer le catway
+                </button>
             </form>
         </section>
     </main>

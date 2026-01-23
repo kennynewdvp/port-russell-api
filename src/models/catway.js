@@ -12,7 +12,7 @@ const CatwaySchema = new Schema({
     },
     type: {
         type: String,
-        enum: ['long', 'short'], //  seulement ces deux valeurs
+        enum: ['Long', 'Short'], //  seulement ces deux valeurs
         required: true
     },
     catwayState: {

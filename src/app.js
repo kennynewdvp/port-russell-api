@@ -21,7 +21,7 @@ app.use(cookieParser());
 
 // Gestion des fichiers statiques (CSS, images)
 // Vérifie si ton dossier public est à la racine ou dans src
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname,'..','public')));
 
 // --- CONNEXION MONGODB ---
 // On utilise la variable d'environnement pour plus de sécurité 

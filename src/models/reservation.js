@@ -17,6 +17,12 @@ const ReservationSchema = new Schema({
         type: String,
         required: true
     },
+    // --- AJOUT DE LA TAILLE DU BATEAU ---
+    boatSize: { 
+        type: String, 
+        enum: ['Short', 'Long'], 
+        required: true 
+    },
     checkIn: {
         type: Date,
         required: true
