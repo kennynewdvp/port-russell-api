@@ -1,81 +1,94 @@
-const User = require('../models/user');
-const Reservation = require('../models/reservation'); // INDISPENSABLE pour voir le Titanic
-const jwt = require('jsonwebtoken');
+/**
+ * @file Contrôleur pour la gestion des utilisateurs (employés) et de l'authentification.
+ * @module controllers/userController
+ */
 
-// --- LOGIN (Connexion) ---
+const User = require('../models/user');
+const Reservation = require('../models/reservation');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+
+// On utilise la même clé que dans le middleware pour que la vérification marche [cite: 2026-01-14, 2026-01-20]
+const SECRET_KEY = 'Russell_Port_Safety_Key2026!@#_Security_Project'; 
+
+/**
+ * Connecte un utilisateur et génère un cookie JWT contenant le RÔLE.
+ */
 exports.login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        
-        // 1. Recherche de l'utilisateur
         const user = await User.findOne({ email });
         
-        // 2. Vérification
-        if (!user || user.password !== password) {
+        if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).send("Email ou mot de passe incorrect");
         }
 
-        // 3. Génération du token (méthode prof : SECRET_KEY en clair) [cite: 2026-01-14]
-        const token = jwt.sign({ userId: user._id }, 'SECRET_KEY', { expiresIn: '24h' });
-        
-        // 4. Stockage dans un cookie
+        // CRUCIAL : On ajoute 'role' dans le token pour que le middleware isAdmin fonctionne [cite: 2026-01-15]
+        const token = jwt.sign(
+            { 
+                userId: user._id, 
+                email: user.email, 
+                role: user.role 
+            }, 
+            SECRET_KEY, 
+            { expiresIn: '24h' }
+        );
+
         res.cookie('token', token, { httpOnly: true });
-
-        // 5. RÉCUPÉRATION DES RÉSERVATIONS POUR LE DASHBOARD
-        // On va chercher toutes les réservations en base pour les afficher sur l'accueil
-        const allReservations = await Reservation.find();
-
-        // 6. RENDU DU DASHBOARD
-        // On remplace 'boats: []' par 'boats: allReservations'
-        res.render('dashboard', { 
-            user: user.name, 
-            boats: allReservations 
-        });
+        res.redirect('/dashboard'); 
 
     } catch (error) {
-        console.error(error);
         res.status(500).send("Erreur de connexion");
     }
 };
 
-// --- LOGOUT (Déconnexion) ---
+/**
+ * Déconnecte l'utilisateur en supprimant le cookie.
+ */
 exports.logout = (req, res) => {
     res.clearCookie('token');
     res.redirect('/');
 };
 
-// --- LISTER LES UTILISATEURS (Point 3.3) ---
+/**
+ * Crée un nouvel utilisateur avec mot de passe haché.
+ */
+exports.createUser = async (req, res) => {
+    try {
+        const { name, firstname, email, password, role } = req.body;
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = new User({
+            name,
+            firstname,
+            email,
+            password: hashedPassword,
+            role: role || 'user' // Permet de choisir le rôle à la création [cite: 2026-01-15]
+        });
+
+        await newUser.save();
+        res.redirect('/users');
+    } catch (error) {
+        res.status(400).send("Erreur lors de la création (Email déjà utilisé ?)");
+    }
+};
+
+/**
+ * Récupère tous les utilisateurs pour la vue admin.
+ */
 exports.getAllUsers = async (req, res) => {
     try {
         const users = await User.find();
         res.render('users', { users });
     } catch (error) {
-        res.status(500).send("Erreur lors de la récupération");
+        res.status(500).send("Erreur serveur");
     }
-};
+}
 
-// --- AJOUTER UN UTILISATEUR (Point 3.3) ---
-exports.createUser = async (req, res) => {
-    try {
-        const newUser = new User(req.body);
-        await newUser.save();
-        res.redirect('/users');
-    } catch (error) {
-        res.status(400).send("Erreur lors de la création");
-    }
-};
-
-// --- MODIFIER UN UTILISATEUR (Point 3.3) ---
-exports.updateUser = async (req, res) => {
-    try {
-        await User.findByIdAndUpdate(req.params.id, req.body);
-        res.redirect('/users');
-    } catch (error) {
-        res.status(400).send("Erreur lors de la modification");
-    }
-};
-
-// --- SUPPRIMER UN UTILISATEUR (Point 5) ---
+/**
+ * Supprime un utilisateur par son ID.
+ */
 exports.deleteUser = async (req, res) => {
     try {
         await User.findByIdAndDelete(req.params.id);
@@ -85,18 +98,31 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
-
+/**
+ * Affiche le tableau de bord.
+ */
 exports.getDashboard = async (req, res) => {
     try {
-        const Reservation = require('../models/reservation');
         const allReservations = await Reservation.find();
-        
-        // On rend la page avec les vraies données
         res.render('dashboard', { 
-            user: 'Capitaine Russell', // Ou récupère le nom via la session si tu l'as configurée
+            // On passe le vrai nom de l'utilisateur connecté à la vue
+            user: req.user ? req.user.email : 'Utilisateur', 
             boats: allReservations 
         });
     } catch (error) {
-        res.status(500).send("Erreur lors du chargement du dashboard");
+        res.status(500).send("Erreur chargement dashboard");
+    }
+};
+
+/**
+ * Modifie les informations d'un utilisateur.
+ */
+exports.updateUser = async (req, res) => {
+    try {
+        const { name, firstname, email, role } = req.body;
+        await User.findByIdAndUpdate(req.params.id, { name, firstname, email, role });
+        res.redirect('/users');
+    } catch (error) {
+        res.status(400).send("Erreur lors de la modification");
     }
 };

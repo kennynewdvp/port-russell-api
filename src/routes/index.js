@@ -5,6 +5,9 @@ const userController = require('../controllers/userController');
 const catwayController = require('../controllers/catwayController');
 const reservationController = require('../controllers/reservationController');
 
+// Import du middleware de securite
+const auth = require('../middlewares/auth');
+
 // --- ROUTES PUBLIQUES ---
 router.get('/', (req, res) => {
     res.render('login'); 
@@ -13,31 +16,27 @@ router.get('/', (req, res) => {
 router.post('/auth/login', userController.login);
 router.get('/logout', userController.logout);
 
+// --- ROUTES PRIVEES ---
 
-// --- ROUTES PRIVÉES ---
+// Tableau de bord 
+router.get('/dashboard', auth.isAuthenticated, userController.getDashboard);
 
-// --- ROUTES PRIVÉES ---
+// --- GESTION DES CATWAYS ---
+router.get('/catways', auth.isAuthenticated, catwayController.getAllCatways);
+router.get('/catways/:id', auth.isAuthenticated, catwayController.getCatwayById);
+router.post('/catways', auth.isAuthenticated, auth.isAdmin, catwayController.createCatway);
+router.post('/catways/:id', auth.isAuthenticated, auth.isAdmin, catwayController.updateCatway);
+router.post('/catways/delete/:id', auth.isAuthenticated, auth.isAdmin, catwayController.deleteCatway);
 
-// Tableau de bord (Modifié pour appeler une fonction du contrôleur)
-// Au lieu de (req, res) => { ... }, on appelle userController.getDashboard
-router.get('/dashboard', userController.getDashboard);
+// --- GESTION DES RESERVATIONS ---
+router.get('/catways/:id/reservations', auth.isAuthenticated, reservationController.getReservationsByCatway);
+router.post('/catways/:id/reservations', auth.isAuthenticated, auth.isAdmin, reservationController.createReservation);
+router.post('/catways/:id/reservations/:id_res/delete', auth.isAuthenticated, auth.isAdmin, reservationController.deleteReservation);
 
-// --- GESTION DES CATWAYS (Points 3.1, 3.3 et 5) ---
-router.get('/catways', catwayController.getAllCatways); // Liste
-router.post('/catways', catwayController.createCatway); // AJOUT : Création [cite: 2026-01-23]
-router.get('/catways/:id', catwayController.getCatwayById); // Détails
-router.post('/catways/:id', catwayController.updateCatway); // AJOUT : Modification [cite: 2026-01-23]
-router.post('/catways/delete/:id', catwayController.deleteCatway); // AJOUT : Suppression [cite: 2026-01-23]
-
-// --- GESTION DES RÉSERVATIONS (Point 3.2) ---
-router.get('/catways/:id/reservations', reservationController.getReservationsByCatway);
-router.post('/catways/:id/reservations', reservationController.createReservation); // AJOUT : Création de résa
-router.post('/catways/:id/reservations/:id_res/delete', reservationController.deleteReservation);
-
-// --- GESTION DES UTILISATEURS (Point 3.3) ---
-router.get('/users', userController.getAllUsers);
-router.post('/users', userController.createUser); // AJOUT : Créer user [cite: 2026-01-23]
-router.post('/users/:id', userController.updateUser); // AJOUT : Modifier user [cite: 2026-01-23]
-router.post('/users/delete/:id', userController.deleteUser); // AJOUT : Supprimer user [cite: 2026-01-23]
+// --- GESTION DES UTILISATEURS ---
+router.get('/users', auth.isAuthenticated, auth.isAdmin, userController.getAllUsers);
+router.post('/users', auth.isAuthenticated, auth.isAdmin, userController.createUser);
+router.post('/users/:id', auth.isAuthenticated, auth.isAdmin, userController.updateUser);
+router.get('/users/delete/:id', auth.isAuthenticated, auth.isAdmin, userController.deleteUser);
 
 module.exports = router;
