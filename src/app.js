@@ -22,7 +22,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // --- CONNEXION MONGODB ---
-// Utilise la variable d'environnement ou la clé de secours si besoin [cite: 2026-01-14]
+// Utilise la variable d'environnement ou la clé de secours 
 const mongoURI = process.env.MONGODB_URI || 'mongodb+srv://kennycombegaming_db_user:Ukgk6nhR3uEbMZdW@cluster0.ra3imqg.mongodb.net/port-russell';
 
 mongoose.connect(mongoURI)
