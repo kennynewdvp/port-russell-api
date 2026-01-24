@@ -1,27 +1,30 @@
-# ⚓ API Port-Russell - Gestion Portuaire
+# ⚓ Port Russell - Système de Gestion de la Capitainerie
+**Projet : Devoir Pratique 6 (Bloc 1)**
 
-Projet réalisé dans le cadre du **Devoir Pratique n°6**. Cette application permet la gestion complète des infrastructures d'un port de plaisance (catways), des réservations et des accès employés.
+## 📝 Présentation
+Cette application permet aux agents de la capitainerie de gérer l'occupation des pontons (catways) et les réservations des clients du Port de Russell. Elle intègre une gestion sécurisée des utilisateurs avec des niveaux d'accès spécifiques.
 
-## 🚀 Fonctionnalités
-- **Authentification** : Système sécurisé via **JWT** et stockage en cookies `httpOnly`.
-- **Gestion des Catways** : CRUD complet pour administrer les pontons.
-- **Gestion des Réservations** : Suivi des bateaux et des périodes d'occupation.
-- **Gestion des Utilisateurs** : Contrôle d'accès basé sur les rôles (**RBAC**).
+---
 
-## 🛠️ Installation et Lancement
-1. **Extraire l'archive** (le dossier `node_modules` a été retiré pour la légèreté).
-2. **Installer les dépendances** :
+## 🔐 Identifiants d'accès (Logs pour le correcteur)
+Pour tester l'application et les restrictions de sécurité, utilisez les comptes suivants :
+
+### 1. Compte Administrateur (Accès total)
+- **Email :** `admin@russell.com`
+- **Mot de passe :** `password123`
+*Permet de créer/modifier/supprimer des catways, des réservations et des utilisateurs.*
+
+### 2. Compte Utilisateur - Jean (Accès limité)
+- **Email :** `jean@russell.com`
+- **Mot de passe :** `password123`
+*Permet uniquement la consultation et certaines actions limitées selon les routes.*
+
+---
+
+## 🛠️ Notice d'installation (Procédure locale)
+Puisque le module de déploiement est prévu au calendrier le 11 mai 2026, voici les étapes pour lancer le projet :
+
+1. **Clonage du dépôt** :
    ```bash
-   npm install
-
-
-   ## 👤 Comptes de test pour la correction
-
-Pour tester le système de gestion des droits (RBAC), vous pouvez utiliser les deux comptes suivants pré-enregistrés en base de données :
-
-| Rôle | Adresse Email | Mot de passe | Permissions |
-| :--- | :--- | :--- | :--- |
-| **ADMIN** | `admin@russell.com` | `password123` | **Accès total** (Gestion des employés, création/suppression de catways). |
-| **USER** | `jean@russell.com` | `123456` | **Lecture seule** (Peut voir le dashboard, mais bloqué pour les modifications). |
-
-> **Note** : Les mots de passe sont hachés en base de données via **BCrypt** pour garantir la sécurité.
+   git clone [https://github.com/kennynewdvp/port-russell-api.git](https://github.com/kennynewdvp/port-russell-api.git)
+   cd port-russell-api
